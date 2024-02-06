@@ -1,5 +1,5 @@
 const { users } = require("../utils/usersData");
-const catchAsyncErrors = require('../middlewares/catchAsyncError');
+const catchAsyncErrors = require('../utils/catchAsyncError');
 
 module.exports.getAllUsers = catchAsyncErrors(async (req, res, next) => {
     try {
@@ -10,7 +10,7 @@ module.exports.getAllUsers = catchAsyncErrors(async (req, res, next) => {
 
 })
 
-module.exports.getUserProfile = catchAsyncErrors(async (req, res, next) => {
+module.exports.getUser = catchAsyncErrors(async (req, res, next) => {
     try {
         const find = users.filter(user => user?.id == req.params.id)
         if (!find)
@@ -48,7 +48,7 @@ module.exports.createUser = catchAsyncErrors(async (req, res, next) => {
 
 })
 
-module.exports.updateUserProfile = catchAsyncErrors(async (req, res, next) => {
+module.exports.updateUser = catchAsyncErrors(async (req, res, next) => {
     try {
 
         const userIndex = users.findIndex((user) => user.id == req.params.id);
@@ -76,7 +76,7 @@ module.exports.updateUserProfile = catchAsyncErrors(async (req, res, next) => {
 })
 
 
-module.exports.deleteUserProfile = catchAsyncErrors(async (req, res, next) => {
+module.exports.deleteUser = catchAsyncErrors(async (req, res, next) => {
     try {
 
         const userIndex = users.findIndex((user) => user.id == req.params.id);
@@ -86,7 +86,7 @@ module.exports.deleteUserProfile = catchAsyncErrors(async (req, res, next) => {
         }
 
         users.splice(userIndex, 1);
-        res.status(200).json({ message: "User profile deleted successfully" });
+        res.status(200).json({ message: "User deleted successfully" });
 
     } catch (err) {
         res.status(500).send({ message: "Internal Server Error" });
