@@ -1,95 +1,28 @@
 const { users } = require("../utils/usersData");
 const catchAsyncErrors = require('../utils/catchAsyncError');
+const { userService } = require('../services')
 
 module.exports.getAllUsers = catchAsyncErrors(async (req, res, next) => {
-    try {
-        return res.status(201).send({ message: "user data Fetched Successfully", data: users });
-    } catch (err) {
-        res.status(500).send({ message: "Internal Server Error" });
-    }
-
+    const users = await userService.getUsers();
+    res.send(users);
 })
 
 module.exports.getUser = catchAsyncErrors(async (req, res, next) => {
-    try {
-        const find = users.filter(user => user?.id == req.params.id)
-        if (!find)
-            return res.status(404).send({ error: true, message: "user not found with associated id" });
-
-        return res.status(200).send({ message: "User data fetched successfully", data: find });
-    } catch (err) {
-        res.status(500).send({ message: "Internal Server Error" });
-    }
-
+    const user = await userService.getUserById(req.params.id);
+    res.send(user);
 })
 
 module.exports.createUser = catchAsyncErrors(async (req, res, next) => {
-    try {
-        const newUser = {
-            id: users?.length + 1,
-            firstName: req?.body?.firstName,
-            lastName: req?.body?.lastName,
-            age: req?.body?.age,
-            email: req?.body?.email,
-            phone: req?.body?.phone,
-            username: req?.body?.username,
-        };
-
-        users.push(newUser);
-        const find = users.filter(user => user?.id == newUser?.id);
-        if (!find)
-            return res.status(404).send({ error: true, message: "Error Occured while user" });
-
-        return res.status(201).send({ message: "User created successfully", data: find });
-
-    } catch (err) {
-        res.status(500).send({ message: "Internal Server Error" });
-    }
-
+    const user = await userService.createUser(req?.body);
+    res.send(user);
 })
 
 module.exports.updateUser = catchAsyncErrors(async (req, res, next) => {
-    try {
-
-        const userIndex = users.findIndex((user) => user.id == req.params.id);
-
-        if (userIndex === -1) {
-            return res.status(404).json({ error: true, message: "User not found with the specified ID." });
-        }
-
-        users[userIndex] = {
-            ...users[userIndex],
-            firstName: req?.body?.firstName,
-            lastName: req?.body?.lastName,
-            age: req?.body?.age,
-            email: req?.body?.email,
-            phone: req?.body?.phone,
-            username: req?.body?.username,
-        };
-
-        res.status(200).json({ message: "User updated successfully", data: users[userIndex] });
-
-    } catch (err) {
-        res.status(500).send({ message: "Internal Server Error" });
-    }
-
+    const response = await userService.updateUserById(req.params.id,req.body);
+    res.send(response);
 })
 
-
 module.exports.deleteUser = catchAsyncErrors(async (req, res, next) => {
-    try {
-
-        const userIndex = users.findIndex((user) => user.id == req.params.id);
-
-        if (userIndex === -1) {
-            return res.status(404).json({ error: true, message: "User not found with the specified ID." });
-        }
-
-        users.splice(userIndex, 1);
-        res.status(200).json({ message: "User deleted successfully" });
-
-    } catch (err) {
-        res.status(500).send({ message: "Internal Server Error" });
-    }
-
+    const response = await userService.deleteUserById(req.params.id);
+    res.send(response);
 })

@@ -21,11 +21,13 @@ const UserSchema = mongoose.Schema({
 
 // Encryption of password
 UserSchema.pre("save", function (next) {
-    const user = this;
-    bcrypt.hash(user.password, 5, function (req, hash) {
-        user.password = hash;
-        next();
-    })
+    if (user.isModified('password')) {
+        const user = this;
+        bcrypt.hash(user.password, 5, function (req, hash) {
+            user.password = hash;
+        })
+    }
+    next();
 });
 
 UserSchema.methods.getJwtToken = () => {
@@ -33,6 +35,13 @@ UserSchema.methods.getJwtToken = () => {
         expiresIn: process.env.JWT_EXPIRES_TIME
     })
 }
+userSchema.methods.isPasswordMatch = async function (password) {
+    const user = this;
+    return bcrypt.compare(password, user.password);
+};
 
-
+userSchema.statics.isEmailTaken = async function (email, excludeUserId) {
+    const user = await this.findOne({ email, _id: { $ne: excludeUserId } });
+    return !!user;
+};
 module.exports = mongoose.model("users", UserSchema)
