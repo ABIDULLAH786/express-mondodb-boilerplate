@@ -2,7 +2,7 @@ const UserModel = require("../models/userModel")
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt")
 
-module.exports.login = async (req, res, next) => {
+module.exports.login = catchAsyncErrors(async (req, res, next) => {
     try {
         const { email, password } = req.body
 
@@ -30,10 +30,10 @@ module.exports.login = async (req, res, next) => {
     } catch (err) {
         res.status(500).send({ message: "Internal Server Error" });
     }
-}
+})
 
 
-module.exports.register = async (req, res, next) => {
+module.exports.register = catchAsyncErrors(async (req, res, next) => {
     try {
         const { name, email, password } = req.body
         if (!name || !email || !password) {
@@ -63,5 +63,5 @@ module.exports.register = async (req, res, next) => {
         res.status(500).send({ message: "Internal Server Error" });
     }
 
-}
+})
 

@@ -6,11 +6,12 @@ const UserSchema = mongoose.Schema({
     name: {
         type: String,
         required: [true, "Please Enter Name"],
+        maxlength: [30, "Your Name cannot exceed 30 charachters"],
     },
     email: {
         type: String,
         required: [true, "Please Enter Email"],
-        unique: true,
+        // unique: [true, "You have Entered A Duplicate Name"],
     },
     password: {
         type: String,

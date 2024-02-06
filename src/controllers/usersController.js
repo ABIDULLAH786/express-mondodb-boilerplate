@@ -1,15 +1,16 @@
 const { users } = require("../utils/usersData");
+const catchAsyncErrors = require('../middlewares/catchAsyncError');
 
-module.exports.getAllUsers = async (req, res, next) => {
+module.exports.getAllUsers = catchAsyncErrors(async (req, res, next) => {
     try {
         return res.status(201).send({ message: "user data Fetched Successfully", data: users });
     } catch (err) {
         res.status(500).send({ message: "Internal Server Error" });
     }
 
-}
+})
 
-module.exports.getUserProfile = async (req, res, next) => {
+module.exports.getUserProfile = catchAsyncErrors(async (req, res, next) => {
     try {
         const find = users.filter(user => user?.id == req.params.id)
         if (!find)
@@ -20,9 +21,9 @@ module.exports.getUserProfile = async (req, res, next) => {
         res.status(500).send({ message: "Internal Server Error" });
     }
 
-}
+})
 
-module.exports.createUser = async (req, res, next) => {
+module.exports.createUser = catchAsyncErrors(async (req, res, next) => {
     try {
         const newUser = {
             id: users?.length + 1,
@@ -38,18 +39,18 @@ module.exports.createUser = async (req, res, next) => {
         const find = users.filter(user => user?.id == newUser?.id);
         if (!find)
             return res.status(404).send({ error: true, message: "Error Occured while user" });
-        
+
         return res.status(201).send({ message: "User created successfully", data: find });
 
     } catch (err) {
         res.status(500).send({ message: "Internal Server Error" });
     }
 
-}
+})
 
-module.exports.updateUserProfile = async (req, res, next) => {
+module.exports.updateUserProfile = catchAsyncErrors(async (req, res, next) => {
     try {
-        
+
         const userIndex = users.findIndex((user) => user.id == req.params.id);
 
         if (userIndex === -1) {
@@ -72,10 +73,10 @@ module.exports.updateUserProfile = async (req, res, next) => {
         res.status(500).send({ message: "Internal Server Error" });
     }
 
-}
+})
 
 
-module.exports.deleteUserProfile = async (req, res, next) => {
+module.exports.deleteUserProfile = catchAsyncErrors(async (req, res, next) => {
     try {
 
         const userIndex = users.findIndex((user) => user.id == req.params.id);
@@ -85,10 +86,10 @@ module.exports.deleteUserProfile = async (req, res, next) => {
         }
 
         users.splice(userIndex, 1);
-        res.status(200).json({ message: "User profile deleted successfully"});
+        res.status(200).json({ message: "User profile deleted successfully" });
 
     } catch (err) {
         res.status(500).send({ message: "Internal Server Error" });
     }
 
-}
+})
