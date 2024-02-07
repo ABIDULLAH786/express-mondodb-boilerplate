@@ -1,4 +1,3 @@
-const { users } = require("../utils/usersData");
 const catchAsyncErrors = require('../utils/catchAsyncError');
 const { userService } = require('../services')
 
@@ -18,11 +17,16 @@ module.exports.createUser = catchAsyncErrors(async (req, res, next) => {
 })
 
 module.exports.updateUser = catchAsyncErrors(async (req, res, next) => {
-    const response = await userService.updateUserById(req.params.id,req.body);
+    const response = await userService.updateUserById(req.params.id, req.body);
     res.send(response);
 })
 
 module.exports.deleteUser = catchAsyncErrors(async (req, res, next) => {
     const response = await userService.deleteUserById(req.params.id);
+    res.send(response);
+})
+
+module.exports.getUserDetails = catchAsyncErrors(async (req, res, next) => {
+    const response = await userService.getUserDetailsById(req.params.id);
     res.send(response);
 })

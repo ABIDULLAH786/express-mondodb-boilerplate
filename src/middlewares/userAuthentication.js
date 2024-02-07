@@ -1,4 +1,6 @@
 const jwt = require("jsonwebtoken");
+const ErrorHandler = require("../utils/errorHandler");
+const { HTTP_STATUS_CODES } = require("../utils/status_codes");
 require("dotenv").config();
 
 const authToken = (req, res, next) => {
@@ -11,7 +13,7 @@ const authToken = (req, res, next) => {
 
     // If token not found, send error message
     if (!token) {
-       return res.status(401).send({ error: true, message: "Token not found" });
+        throw new ErrorHandler("Token not found", HTTP_STATUS_CODES.NOT_FOUND)
     }
 
     // Authenticate token

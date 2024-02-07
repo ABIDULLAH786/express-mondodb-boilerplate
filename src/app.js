@@ -6,8 +6,9 @@ const errorMiddleware = require("./middlewares/errors");
 app.use(express.json());
 app.use(cors());
 
-const UserRoutes = require("./routes/UserRoutes")
-app.use(UserRoutes)
+const { userRoute, authRoute } = require("./routes")
+app.use(authRoute)
+app.use(userRoute)
 app.use(errorMiddleware);
 
 module.exports = app;

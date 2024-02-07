@@ -3,8 +3,6 @@ module.exports = (err, req, res, next) => {
     err.statusCode = err.statusCode || 500;
 
     if (process.env.NODE_ENV === 'DEVELOPMENT') {
-        console.log(err);
-
         res.status(err.statusCode).json({
             success: false,
             error: err,
@@ -21,7 +19,7 @@ module.exports = (err, req, res, next) => {
         // Wrong Mongoose Object ID Error
         if (err.name === 'CastError') {
             const message = `Resource not found. Invalid: ${err.path}`
-            error = new ErrorHandler(message, 400)
+            error = new ErrorHandler(message, err.statusCode)
         }
 
         // Handling Mongoose Validation Error
@@ -31,7 +29,7 @@ module.exports = (err, req, res, next) => {
         }
 
         // Handling Mongoose duplicate key errors
-        if (err.code === 11000) {
+        if (err.statusCode == 11000) {
             const message = `Duplicate ${Object.keys(err.keyValue)} entered`
             error = new ErrorHandler(message, 400)
         }
@@ -39,13 +37,13 @@ module.exports = (err, req, res, next) => {
         // Handling wrong JWT error
         if (err.name === 'JsonWebTokenError') {
             const message = 'JSON Web Token is invalid. Try Again!!!'
-            error = new ErrorHandler(message, 400)
+            error = new ErrorHandler(message, err.statusCode)
         }
 
         // Handling Expired JWT error
         if (err.name === 'TokenExpiredError') {
             const message = 'JSON Web Token is expired. Try Again!!!'
-            error = new ErrorHandler(message, 400)
+            error = new ErrorHandler(message, err.statusCode)
         }
 
         res.status(error.statusCode || 500).json({

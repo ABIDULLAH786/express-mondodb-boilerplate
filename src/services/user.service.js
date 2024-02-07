@@ -1,68 +1,46 @@
+const { User } = require("../models");
 const ErrorHandler = require("../utils/errorHandler");
 const { users } = require("../utils/usersData");
+const HTTP_STATUS_CODES = require('../utils/status_codes');
 
-module.exports.getUserById = async (id) => {
-    const userIndex = users.findIndex((user) => user.id == id);
-    if (userIndex === -1) {
-        throw new ErrorHandler("User not found", 404)
-    }
-    return users[userIndex];
+module.exports.getUserById = async (userId) => {
+    return User.findById(userId);
+};
+module.exports.getUserByEmail = async (email) => {
+    return User.findOne({ email });
+};
+module.exports.createUser = async (userBody) => {
+    return User.create(userBody);
 };
 
-module.exports.createUser = async (data) => {
-    if (users.filter(user => user?.email == data.email)?.length > 0) {
-        throw new ErrorHandler('Email already taken', 422);
-    }
-    const newUser = {
-        id: users?.length + 1,
-        firstName: data?.firstName,
-        lastName: data?.lastName,
-        age: data?.age,
-        email: data?.email,
-        phone: data?.phone,
-        username: data?.username,
-    };
-
-    users.push(newUser);
-
-    const find = users.filter(user => user?.id == newUser?.id);
-
-    return find;
+module.exports.getUsers = async () => {
+    return User.find();
 };
 
-module.exports.getUsers = async (id) => {
-    return users;
+module.exports.updateUserById = async (userId, updateBody) => {
+    const user = await this.getUserById(userId);
+    if (!user) {
+        throw new ErrorHandler('User not found', HTTP_STATUS_CODES.NOT_FOUND);
+    }
+    if (updateBody.email && (await User.isEmailTaken(updateBody.email, userId))) {
+        throw new ErrorHandler('Email already taken', HTTP_STATUS_CODES.BAD_REQUEST);
+    }
+    Object.assign(user, updateBody);
+    await user.save();
+    return user;
 };
 
-module.exports.updateUserById = async (id, updateUser) => {
-    const userIndex = users.findIndex((user) => user.id == id);
-    if (userIndex === -1) {
-        throw new ErrorHandler("User not found", 404)
+module.exports.deleteUserById = async (userId) => {
+    const user = await this.getUserById(userId);
+    if (!user) {
+        throw new ErrorHandler('User not found', HTTP_STATUS_CODES.NOT_FOUND);
     }
-
-    if (users.filter(user => user?.email == updateUser.email)?.length > 0) {
-        throw new ErrorHandler('Email already taken', 422);
-    }
-    users[userIndex] = {
-        ...users[userIndex],
-        firstName: updateUser.firstName,
-        lastName: updateUser.lastName,
-        age: updateUser.age,
-        email: updateUser.email,
-        phone: updateUser.phone,
-        username: updateUser.username,
-    };
-
-    return users[userIndex];
+    await user.remove();
+    return user;
 };
 
-module.exports.deleteUserById = async (id) => {
-    const userIndex = users.findIndex((user) => user.id == id);
-    const find = users.filter(user => user?.id == id);
-    if (userIndex < 1) {
-        throw new ErrorHandler('User not found', 404);
-    }
 
-    users.splice(userIndex, 1);
-    return find;
+module.exports.getUserDetailsById = async (userId) => {
+    const user = await this.getUserById(userId);
+    return user;
 };
