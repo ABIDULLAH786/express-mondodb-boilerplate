@@ -1,7 +1,6 @@
 const { User } = require("../models");
 const ErrorHandler = require("../utils/errorHandler");
-const { users } = require("../utils/usersData");
-const HTTP_STATUS_CODES = require('../utils/status_codes');
+const { HTTP_STATUS_CODES } = require('../utils/status_codes');
 
 module.exports.getUserById = async (userId) => {
     return User.findById(userId);
@@ -33,6 +32,7 @@ module.exports.updateUserById = async (userId, updateBody) => {
 module.exports.deleteUserById = async (userId) => {
     const user = await this.getUserById(userId);
     if (!user) {
+        console.log("HTTP_STATUS_CODES.NOT_FOUND: " + HTTP_STATUS_CODES.NOT_FOUND)  // this print undefined
         throw new ErrorHandler('User not found', HTTP_STATUS_CODES.NOT_FOUND);
     }
     await user.remove();

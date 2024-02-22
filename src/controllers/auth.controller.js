@@ -3,16 +3,16 @@ const catchAsyncErrors = require('../utils/catchAsyncError');
 const { HTTP_STATUS_CODES } = require('../utils/status_codes');
 
 const register = catchAsyncErrors(async (req, res) => {
-    const user = await userService.createUser(req.body);
-    const tokens = await tokenService.generateAuthTokens(user);
-    res.status(HTTP_STATUS_CODES.CREATED).send({ user, tokens });
+    await userService.createUser(req.body);
+    // const tokens = await tokenService.generateAuthTokens(user);
+    res.status(HTTP_STATUS_CODES.CREATED)//.json({ message: "User registered successfully" });
 });
 
 const login = catchAsyncErrors(async (req, res) => {
     const { email, password } = req.body;
     const user = await authService.loginUserWithEmailAndPassword(email, password);
     const tokens = await tokenService.generateAuthTokens(user);
-    res.send({ user, tokens });
+    res.status(HTTP_STATUS_CODES.ACCEPTED).send({ user, tokens });
 });
 
 const logout = catchAsyncErrors(async (req, res) => {

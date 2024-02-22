@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/abidullah786/nodejs-template-advance"
+    "url": "https://github.com/abidullah786/nodejs-express"
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
