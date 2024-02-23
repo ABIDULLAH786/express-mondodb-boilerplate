@@ -9,7 +9,7 @@ const connectDatabase = require("./database/connection");
 connectDatabase();
 
 const server = app.listen(process.env.PORT, () => {
-  console.log(`Server is port ${process.env.PORT} in ${process.env.NODE_ENV}`);
+  console.log(`Server is port ${process.env.PORT} in ${process.env.NODE_ENV} =>  htpp://localhost:${process.env.PORT}`);
 });
 
 process.on("unhandledRejection", (err) => {

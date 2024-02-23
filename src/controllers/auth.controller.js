@@ -3,9 +3,10 @@ const catchAsyncErrors = require('../utils/catchAsyncError');
 const { HTTP_STATUS_CODES } = require('../utils/status_codes');
 
 const register = catchAsyncErrors(async (req, res) => {
-    await userService.createUser(req.body);
-    // const tokens = await tokenService.generateAuthTokens(user);
-    res.status(HTTP_STATUS_CODES.CREATED)//.json({ message: "User registered successfully" });
+    const user = await userService.createUser(req.body);
+    const token = await tokenService.generateVerifyEmailToken(user);
+    await emailService.sendVerificationEmail(user, token);
+    res.status(HTTP_STATUS_CODES.CREATED).json({ message: "User registered successfully, will recive verification link via email" });
 });
 
 const login = catchAsyncErrors(async (req, res) => {
@@ -37,13 +38,16 @@ const resetPassword = catchAsyncErrors(async (req, res) => {
 });
 
 const sendVerificationEmail = catchAsyncErrors(async (req, res) => {
-    const verifyEmailToken = await tokenService.generateVerifyEmailToken(req.user);
-    await emailService.sendVerificationEmail(req.user.email, verifyEmailToken);
+    const verifyEmailToken = await tokenService.generateVerifyEmailToken(req.body);
+    await emailService.sendVerificationEmail(req.body, verifyEmailToken);
     res.status(HTTP_STATUS_CODES.NO_CONTENT).send();
 });
 
 const verifyEmail = catchAsyncErrors(async (req, res) => {
-    await authService.verifyEmail(req.query.token);
+    console.log("verify email api end point")
+    console.log(req)
+    const token = req?.query?.token || req.body.token
+    await authService.verifyEmail(token);
     res.status(HTTP_STATUS_CODES.NO_CONTENT).send();
 });
 

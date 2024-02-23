@@ -13,6 +13,7 @@
     "jsonwebtoken": "^9.0.2",
     "moment": "^2.30.1",
     "mongoose": "^6.1.3",
+    "nodemailer-express-handlebars": "^6.1.2",
     "nodemon": "^2.0.15"
   },
   "repository": {

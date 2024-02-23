@@ -4,6 +4,7 @@ const Token = require('../models/token.model');
 const { tokenTypes } = require('../config/tokens');
 const { HTTP_STATUS_CODES } = require('../utils/status_codes');
 const ErrorHandler = require('../utils/errorHandler');
+const { emailService } = require('.');
 
 /**
  * Login with username and password
@@ -83,8 +84,13 @@ module.exports.verifyEmail = async (verifyEmailToken) => {
         if (!user) {
             throw new Error();
         }
-        await Token.deleteMany({ user: user.id, type: tokenTypes.VERIFY_EMAIL });
-        await userService.updateUserById(user.id, { isEmailVerified: true });
+        const verified = await userService.updateUserById(user.id, { isEmailVerified: true });
+        if (verified) {
+            await Token.deleteMany({ user: user.id, type: tokenTypes.VERIFY_EMAIL });
+            emailService.sendVerifiedConfirmation(user)
+        } else {
+            throw new ErrorHandler('Email verification failed', HTTP_STATUS_CODES.BAD_REQUEST);
+        }
     } catch (error) {
         throw new ErrorHandler('Email verification failed', HTTP_STATUS_CODES.UNAUTHORIZED);
     }
