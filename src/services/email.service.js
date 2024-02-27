@@ -82,7 +82,6 @@ module.exports.sendVerifiedConfirmation = async (user, options = "") => {
         console.log("Error in sending verification confirmation email")
         throw new ErrorHandler(e, HTTP_STATUS_CODES.BAD_REQUEST)
     });
-    console.log(res)
 
 };
 

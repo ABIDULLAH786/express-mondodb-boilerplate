@@ -78,21 +78,20 @@ module.exports.resetPassword = async (resetPasswordToken, newPassword) => {
  * @returns {Promise}
  */
 module.exports.verifyEmail = async (verifyEmailToken) => {
-    try {
-        const verifyEmailTokenDoc = await tokenService.verifyToken(verifyEmailToken, tokenTypes.VERIFY_EMAIL);
-        const user = await userService.getUserById(verifyEmailTokenDoc.user);
-        if (!user) {
-            throw new Error();
-        }
-        const verified = await userService.updateUserById(user.id, { isEmailVerified: true });
-        if (verified) {
-            await Token.deleteMany({ user: user.id, type: tokenTypes.VERIFY_EMAIL });
-            emailService.sendVerifiedConfirmation(user)
-        } else {
-            throw new ErrorHandler('Email verification failed', HTTP_STATUS_CODES.BAD_REQUEST);
-        }
-    } catch (error) {
-        throw new ErrorHandler('Email verification failed', HTTP_STATUS_CODES.UNAUTHORIZED);
+    const verifyEmailTokenDoc = await tokenService.verifyToken(verifyEmailToken, tokenTypes.VERIFY_EMAIL);
+    if (!verifyEmailTokenDoc) {
+        throw new Error("User info not found.", 400);
+    }
+    const user = await userService.getUserById(verifyEmailTokenDoc.user);
+    if (!user) {
+        throw new Error("User info not found.", 400);
+    }
+    const verified = await userService.updateUserById(user.id, { email: user.email, verified: true });
+    if (verified) {
+        // await Token.deleteMany({ user: user.id, type: tokenTypes.VERIFY_EMAIL });
+        emailService.sendVerifiedConfirmation(user)
+    } else {
+        throw new ErrorHandler('Email verification failed', HTTP_STATUS_CODES.BAD_REQUEST);
     }
 };
 

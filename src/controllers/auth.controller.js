@@ -18,7 +18,7 @@ const login = catchAsyncErrors(async (req, res) => {
 
 const logout = catchAsyncErrors(async (req, res) => {
     await authService.logout(req.body.refreshToken);
-    res.status(HTTP_STATUS_CODES.NO_CONTENT).send();
+    res.status(HTTP_STATUS_CODES.OK).json({ message: 'Logout successfully' });
 });
 
 const refreshTokens = catchAsyncErrors(async (req, res) => {
@@ -29,26 +29,26 @@ const refreshTokens = catchAsyncErrors(async (req, res) => {
 const forgotPassword = catchAsyncErrors(async (req, res) => {
     const resetPasswordToken = await tokenService.generateResetPasswordToken(req.body.email);
     await emailService.sendResetPasswordEmail(req.body.email, resetPasswordToken);
-    res.status(HTTP_STATUS_CODES.NO_CONTENT).send();
+    res.status(HTTP_STATUS_CODES.OK).json({ message: 'email sent' });
 });
 
 const resetPassword = catchAsyncErrors(async (req, res) => {
     await authService.resetPassword(req.query.token, req.body.password);
-    res.status(HTTP_STATUS_CODES.NO_CONTENT).send();
+    res.status(HTTP_STATUS_CODES.OK).json({ message: 'email sent' });
 });
 
 const sendVerificationEmail = catchAsyncErrors(async (req, res) => {
     const verifyEmailToken = await tokenService.generateVerifyEmailToken(req.body);
     await emailService.sendVerificationEmail(req.body, verifyEmailToken);
-    res.status(HTTP_STATUS_CODES.NO_CONTENT).send();
+    res.status(HTTP_STATUS_CODES.OK).json({ message: 'email sent' });
 });
 
 const verifyEmail = catchAsyncErrors(async (req, res) => {
     console.log("verify email api end point")
-    console.log(req)
+    console.log(req.body)
     const token = req?.query?.token || req.body.token
     await authService.verifyEmail(token);
-    res.status(HTTP_STATUS_CODES.NO_CONTENT).send();
+    res.status(HTTP_STATUS_CODES.OK).json({ message: 'email sent' });
 });
 
 module.exports = {

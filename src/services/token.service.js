@@ -4,6 +4,7 @@ const userService = require('./user.service');
 const { Token } = require('../models');
 const { tokenTypes } = require('../config/tokens');
 const ErrorHandler = require('../utils/errorHandler');
+const { HTTP_STATUS_CODES } = require('../utils/status_codes');
 
 /**
  * Generate token
@@ -49,11 +50,12 @@ const saveToken = async (token, userId, expires, type, blacklisted = false) => {
  * @param {string} type
  * @returns {Promise<Token>}
  */
-const verifyToken = async (token, type) => {
-    const payload = jwt.verify(token, process.env.JWT_SECRET_KEY);
+const verifyToken = async (token, type, secret = process.env.JWT_SECRET_KEY) => {
+    const payload = jwt.verify(token, secret);
+    console.log("payload: ", payload)
     const tokenDoc = await Token.findOne({ token, type, user: payload.sub, blacklisted: false });
     if (!tokenDoc) {
-        throw new ErrorHandler('Token not found', 404);
+        throw new ErrorHandler('Invalid token', HTTP_STATUS_CODES.BAD_REQUEST);
     }
     return tokenDoc;
 };
