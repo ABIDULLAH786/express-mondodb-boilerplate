@@ -10,10 +10,7 @@ module.exports.getUserByEmail = async (email) => {
 };
 module.exports.createUser = async (userBody) => {
     const user = await User.create(userBody);
-    console.log(user)
-    if (user){
-        
-    }
+    
     return user
 };
 
@@ -37,7 +34,6 @@ module.exports.updateUserById = async (userId, updateBody) => {
 module.exports.deleteUserById = async (userId) => {
     const user = await this.getUserById(userId);
     if (!user) {
-        console.log("HTTP_STATUS_CODES.NOT_FOUND: " + HTTP_STATUS_CODES.NOT_FOUND)  // this print undefined
         throw new ErrorHandler('User not found', HTTP_STATUS_CODES.NOT_FOUND);
     }
     await user.remove();
