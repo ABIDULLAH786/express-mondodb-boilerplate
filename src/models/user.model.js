@@ -54,7 +54,6 @@ UserSchema.methods.isPasswordMatch = async function (password) {
 
 UserSchema.statics.isEmailTaken = async function (email, excludeUserId) {
     const user = await this.findOne({ email, _id: { $ne: excludeUserId } });
-    console.log(user)
     return !!user;
 };
 module.exports = mongoose.model("users", UserSchema)

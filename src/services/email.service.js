@@ -49,7 +49,6 @@ module.exports.sendVerificationEmail = async (user, token, options = "") => {
         },
     };
     const mailSent = await transport.sendMail(message).catch((e) => {
-        console.log('error in sending link for email varification', e)
         throw new ErrorHandler(e, HTTP_STATUS_CODES.BAD_REQUEST)
     });
 
@@ -74,7 +73,6 @@ module.exports.testEmail = async (email) => {
         },
     };
     const mailSent = await transport.sendMail(message).catch((e) => {
-        console.log('error in sending link for email varification', e)
         throw new ErrorHandler(e, HTTP_STATUS_CODES.BAD_REQUEST)
     });
 
@@ -102,7 +100,6 @@ module.exports.sendVerifiedConfirmation = async (user, options = {}) => {
         },
     };
     const res = await transport.sendMail(message).catch((e) => {
-        console.log("Error in sending verification confirmation email")
         throw new ErrorHandler(e, HTTP_STATUS_CODES.BAD_REQUEST)
     });
 
@@ -136,7 +133,6 @@ module.exports.sendResetPasswordEmail = async (user, token, options = {}) => {
         },
     };
     const mailSent = await transport.sendMail(message).catch((e) => {
-        console.log('error in sending link for password reset', e)
         throw new ErrorHandler(e, HTTP_STATUS_CODES.BAD_REQUEST)
     });
 

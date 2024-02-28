@@ -58,7 +58,3 @@ module.exports.HTTP_STATUS_CODES = {
     INSUFFICIENT_STORAGE: 507,
     NETWORK_AUTHENTICATION_REQUIRED: 511
 };
-
-// Example usage:
-// console.log(HTTP_STATUS_CODES.NOT_FOUND); // Output: 404
-// console.log(HTTP_STATUS_CODES.OK); // Output: 200
