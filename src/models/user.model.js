@@ -23,6 +23,10 @@ const UserSchema = mongoose.Schema({
         enum: roles,
         default: 'user',
     },
+    verified:{
+        type: Boolean,
+        default: false,
+    }
 })
 
 // Encryption of password

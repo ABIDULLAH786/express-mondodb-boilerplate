@@ -4,6 +4,7 @@ const Token = require('../models/token.model');
 const { tokenTypes } = require('../config/tokens');
 const { HTTP_STATUS_CODES } = require('../utils/status_codes');
 const ErrorHandler = require('../utils/errorHandler');
+const { emailService } = require('.');
 
 /**
  * Login with username and password
@@ -62,7 +63,7 @@ module.exports.resetPassword = async (resetPasswordToken, newPassword) => {
         const resetPasswordTokenDoc = await tokenService.verifyToken(resetPasswordToken, tokenTypes.RESET_PASSWORD);
         const user = await userService.getUserById(resetPasswordTokenDoc.user);
         if (!user) {
-            throw new Error();
+            throw new Error("Access Denied", HTTP_STATUS_CODES.FORBIDDEN);
         }
         await userService.updateUserById(user.id, { password: newPassword });
         await Token.deleteMany({ user: user.id, type: tokenTypes.RESET_PASSWORD });
@@ -77,16 +78,20 @@ module.exports.resetPassword = async (resetPasswordToken, newPassword) => {
  * @returns {Promise}
  */
 module.exports.verifyEmail = async (verifyEmailToken) => {
-    try {
-        const verifyEmailTokenDoc = await tokenService.verifyToken(verifyEmailToken, tokenTypes.VERIFY_EMAIL);
-        const user = await userService.getUserById(verifyEmailTokenDoc.user);
-        if (!user) {
-            throw new Error();
-        }
+    const verifyEmailTokenDoc = await tokenService.verifyToken(verifyEmailToken, tokenTypes.VERIFY_EMAIL);
+    if (!verifyEmailTokenDoc) {
+        throw new Error("User info not found.", 400);
+    }
+    const user = await userService.getUserById(verifyEmailTokenDoc.user);
+    if (!user) {
+        throw new Error("User info not found.", 400);
+    }
+    const verified = await userService.updateUserById(user.id, { email: user.email, verified: true });
+    if (verified) {
         await Token.deleteMany({ user: user.id, type: tokenTypes.VERIFY_EMAIL });
-        await userService.updateUserById(user.id, { isEmailVerified: true });
-    } catch (error) {
-        throw new ErrorHandler('Email verification failed', HTTP_STATUS_CODES.UNAUTHORIZED);
+        emailService.sendVerifiedConfirmation(user)
+    } else {
+        throw new ErrorHandler('Email verification failed', HTTP_STATUS_CODES.BAD_REQUEST);
     }
 };
 

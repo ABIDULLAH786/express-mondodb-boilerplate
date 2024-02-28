@@ -4,6 +4,7 @@ const userService = require('./user.service');
 const { Token } = require('../models');
 const { tokenTypes } = require('../config/tokens');
 const ErrorHandler = require('../utils/errorHandler');
+const { HTTP_STATUS_CODES } = require('../utils/status_codes');
 
 /**
  * Generate token
@@ -49,11 +50,11 @@ const saveToken = async (token, userId, expires, type, blacklisted = false) => {
  * @param {string} type
  * @returns {Promise<Token>}
  */
-const verifyToken = async (token, type) => {
-    const payload = jwt.verify(token, process.env.JWT_SECRET_KEY);
+const verifyToken = async (token, type, secret = process.env.JWT_SECRET_KEY) => {
+    const payload = jwt.verify(token, secret);
     const tokenDoc = await Token.findOne({ token, type, user: payload.sub, blacklisted: false });
     if (!tokenDoc) {
-        throw new ErrorHandler('Token not found', 404);
+        throw new ErrorHandler('Invalid token', HTTP_STATUS_CODES.BAD_REQUEST);
     }
     return tokenDoc;
 };
@@ -64,7 +65,6 @@ const verifyToken = async (token, type) => {
  * @returns {Promise<Object>}
  */
 const generateAuthTokens = async (user) => {
-    console.log(process.env.JWT_REFRESH_EXPIRES_TIME)
     const accessTokenExpires = moment().add(process.env.JWT_EXPIRES_TIME, 'minutes');
     const accessToken = generateToken(user.id, accessTokenExpires, tokenTypes.ACCESS);
 
@@ -92,12 +92,13 @@ const generateAuthTokens = async (user) => {
 const generateResetPasswordToken = async (email) => {
     const user = await userService.getUserByEmail(email);
     if (!user) {
-        throw new ErrorHandler('No users found with this email', 404);
+        throw new ErrorHandler('No users found with this email', HTTP_STATUS_CODES.NOT_FOUND);
     }
     const expires = moment().add(process.env.JWT_RESET_PASSWORD_TOKEN_EXPIRES_TIME, 'minutes');
     const resetPasswordToken = generateToken(user.id, expires, tokenTypes.RESET_PASSWORD);
+    deleteTokenIfExist(user.id);
     await saveToken(resetPasswordToken, user.id, expires, tokenTypes.RESET_PASSWORD);
-    return resetPasswordToken;
+    return { user, resetPasswordToken };
 };
 
 /**
@@ -112,6 +113,23 @@ const generateVerifyEmailToken = async (user) => {
     return verifyEmailToken;
 };
 
+/**
+ * get  token ny user id
+ * @param {Number} id
+ * @returns {Promise<string>}
+ */
+const getTokenByUserId = async (user) => {
+    const token = await Token.findOne({ user });
+    return token;
+};
+
+/**
+ * get  token ny user id
+ * @param {Number} id (user)
+ */
+const deleteTokenIfExist = async (user) => {
+    return await Token.deleteOne({ user });
+};
 module.exports = {
     generateToken,
     saveToken,

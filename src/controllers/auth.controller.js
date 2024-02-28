@@ -1,11 +1,13 @@
 const { authService, userService, tokenService, emailService } = require('../services');
 const catchAsyncErrors = require('../utils/catchAsyncError');
+const ErrorHandler = require('../utils/errorHandler');
 const { HTTP_STATUS_CODES } = require('../utils/status_codes');
 
 const register = catchAsyncErrors(async (req, res) => {
-    await userService.createUser(req.body);
-    // const tokens = await tokenService.generateAuthTokens(user);
-    res.status(HTTP_STATUS_CODES.CREATED)//.json({ message: "User registered successfully" });
+    const user = await userService.createUser(req.body);
+    const token = await tokenService.generateVerifyEmailToken(user);
+    await emailService.sendVerificationEmail(user, token);
+    res.status(HTTP_STATUS_CODES.CREATED).json({ message: "User registered successfully, will recive verification link via email" });
 });
 
 const login = catchAsyncErrors(async (req, res) => {
@@ -17,7 +19,7 @@ const login = catchAsyncErrors(async (req, res) => {
 
 const logout = catchAsyncErrors(async (req, res) => {
     await authService.logout(req.body.refreshToken);
-    res.status(HTTP_STATUS_CODES.NO_CONTENT).send();
+    res.status(HTTP_STATUS_CODES.OK).json({ status: 'ok' });
 });
 
 const refreshTokens = catchAsyncErrors(async (req, res) => {
@@ -26,34 +28,38 @@ const refreshTokens = catchAsyncErrors(async (req, res) => {
 });
 
 const forgotPassword = catchAsyncErrors(async (req, res) => {
-    const resetPasswordToken = await tokenService.generateResetPasswordToken(req.body.email);
-    await emailService.sendResetPasswordEmail(req.body.email, resetPasswordToken);
-    res.status(HTTP_STATUS_CODES.NO_CONTENT).send();
+    if (!req.body.email) throw new ErrorHandler("Required Data is missing", HTTP_STATUS_CODES.BAD_REQUEST)
+
+    const { user, resetPasswordToken } = await tokenService.generateResetPasswordToken(req.body.email);
+    await emailService.sendResetPasswordEmail(user, resetPasswordToken);
+    res.status(HTTP_STATUS_CODES.OK).json({ delivered: 1, status: 'ok' });
 });
 
 const resetPassword = catchAsyncErrors(async (req, res) => {
-    await authService.resetPassword(req.query.token, req.body.password);
-    res.status(HTTP_STATUS_CODES.NO_CONTENT).send();
+    if (!req.body.password) throw new ErrorHandler("Required Data is missing", HTTP_STATUS_CODES.BAD_REQUEST)
+
+    await authService.resetPassword(req.body.token, req.body.password);
+    res.status(HTTP_STATUS_CODES.OK).json({ status: 'ok', message: "Password changed successfully" });
 });
 
-const sendVerificationEmail = catchAsyncErrors(async (req, res) => {
-    const verifyEmailToken = await tokenService.generateVerifyEmailToken(req.user);
-    await emailService.sendVerificationEmail(req.user.email, verifyEmailToken);
-    res.status(HTTP_STATUS_CODES.NO_CONTENT).send();
+const testEmail = catchAsyncErrors(async (req, res) => {
+    await emailService.testEmail(req.body.email);
+    res.status(HTTP_STATUS_CODES.OK).json({ delivered: 1, status: 'ok' });
 });
 
 const verifyEmail = catchAsyncErrors(async (req, res) => {
-    await authService.verifyEmail(req.query.token);
-    res.status(HTTP_STATUS_CODES.NO_CONTENT).send();
+    const token = req?.query?.token || req.body.token
+    await authService.verifyEmail(token);
+    res.status(HTTP_STATUS_CODES.OK).json({ delivered: 1, status: 'ok' });
 });
 
 module.exports = {
+    testEmail,
     register,
     login,
     logout,
     refreshTokens,
     forgotPassword,
     resetPassword,
-    sendVerificationEmail,
     verifyEmail,
 };

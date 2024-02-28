@@ -9,10 +9,9 @@ router.post('/auth/logout', authController.logout);
 router.post('/auth/refresh-tokens', authController.refreshTokens);
 router.post('/auth/forgot-password', authController.forgotPassword);
 router.post('/auth/reset-password', authController.resetPassword);
-router.post('/auth/send-verification-email', authController.sendVerificationEmail);
-router.post('/auth/verify-email', authController.verifyEmail);
+router.post('/auth/verify-email', authController.verifyEmail); // this api will call: after registration if user click the link sent via email 
 
-router.post('/auth/register', authController.register);
+router.post('/auth/testing-email', authController.testEmail);
 
 module.exports = router;
 

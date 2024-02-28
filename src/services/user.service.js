@@ -9,7 +9,12 @@ module.exports.getUserByEmail = async (email) => {
     return User.findOne({ email });
 };
 module.exports.createUser = async (userBody) => {
-    return User.create(userBody);
+    const user = await User.create(userBody);
+    console.log(user)
+    if (user){
+        
+    }
+    return user
 };
 
 module.exports.getUsers = async () => {
