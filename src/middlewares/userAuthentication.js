@@ -1,9 +1,11 @@
 const jwt = require("jsonwebtoken");
 const ErrorHandler = require("../utils/errorHandler");
 const { HTTP_STATUS_CODES } = require("../utils/status_codes");
+const { tokenTypes } = require("../config/tokens");
 require("dotenv").config();
 
 const authToken = (req, res, next) => {
+
     // Option 1
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1]; // Bearer Token
@@ -18,9 +20,12 @@ const authToken = (req, res, next) => {
 
     // Authenticate token
     try {
-        const user = jwt.verify(token, process.env.JWT_SECRET_KEY);
-        if (user) {
+        const payload = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        if (payload) {
             next();
+        } else {
+            throw new ErrorHandler("Unathorized", HTTP_STATUS_CODES.UNAUTHORIZED)
+
         }
 
     } catch (err) {

@@ -63,7 +63,7 @@ module.exports.resetPassword = async (resetPasswordToken, newPassword) => {
         const resetPasswordTokenDoc = await tokenService.verifyToken(resetPasswordToken, tokenTypes.RESET_PASSWORD);
         const user = await userService.getUserById(resetPasswordTokenDoc.user);
         if (!user) {
-            throw new Error();
+            throw new Error("Access Denied", HTTP_STATUS_CODES.FORBIDDEN);
         }
         await userService.updateUserById(user.id, { password: newPassword });
         await Token.deleteMany({ user: user.id, type: tokenTypes.RESET_PASSWORD });
@@ -88,7 +88,7 @@ module.exports.verifyEmail = async (verifyEmailToken) => {
     }
     const verified = await userService.updateUserById(user.id, { email: user.email, verified: true });
     if (verified) {
-        // await Token.deleteMany({ user: user.id, type: tokenTypes.VERIFY_EMAIL });
+        await Token.deleteMany({ user: user.id, type: tokenTypes.VERIFY_EMAIL });
         emailService.sendVerifiedConfirmation(user)
     } else {
         throw new ErrorHandler('Email verification failed', HTTP_STATUS_CODES.BAD_REQUEST);

@@ -31,8 +31,6 @@ const transport = nodemailer.createTransport({
 module.exports.sendVerificationEmail = async (user, token, options = "") => {
     transport.use('compile', hbs(handlebarOptions));
     const subject = options?.subject || 'Account Verification';
-    console.log("process.env.SMTP_USER: " + process.env.SMTP_USER)
-    console.log("process.env.SMTP_PASSWORD: " + process.env.SMTP_PASSWORD)
 
     // replace this url with the link to the email verification page of your front-end app
     const verificationEmailUrl = `http://localhost:3000/verify-email?token=${token}`;
@@ -64,7 +62,7 @@ module.exports.sendVerificationEmail = async (user, token, options = "") => {
  * @param {string} options
  * @returns {Promise}
  */
-module.exports.sendVerifiedConfirmation = async (user, options = "") => {
+module.exports.sendVerifiedConfirmation = async (user, options = {}) => {
     transport.use('compile', hbs(handlebarOptions));
     const subject = options?.subject || 'Account Verified';
 
@@ -92,7 +90,30 @@ module.exports.sendVerifiedConfirmation = async (user, options = "") => {
  * @param {string} token
  * @returns {Promise}
  */
-module.exports.sendResetPasswordEmail = async (to, token) => {
+module.exports.sendResetPasswordEmail = async (user, token, options = {}) => {
+    transport.use('compile', hbs(handlebarOptions));
+    const subject = options?.subject || 'Password Rest Request';
+
+    // replace this url with the link to the email verification page of your front-end app
+    const url = `http://localhost:3000/set-new-password?token=${token}`;
+
+    const message = {
+        from: `${process.env.SMTP_FROM_EMAIL}`,
+        to: user?.email || 'abidullah.bsef18@iba-suk.edu.pk',
+        subject: subject,
+        template: 'forgetPassword',
+        context: {
+            userName: user?.name || '',
+            email: user?.email || '',
+            url: url,
+            token: token,
+            companyName: "AK TECH",
+        },
+    };
+    const mailSent = await transport.sendMail(message).catch((e) => {
+        console.log('error in sending link for password reset', e)
+        throw new ErrorHandler(e, HTTP_STATUS_CODES.BAD_REQUEST)
+    });
 
 };
 
