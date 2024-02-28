@@ -49,6 +49,26 @@ The API endpoints are protected by JWT authentication. To access the endpoints, 
 
 If an error occurs, the API will return an error response in JSON format. Please refer to the [API documentation](./APIDocumentation.md) for the list of possible error responses and their meanings.
 
+<br>
+
+## Logging
+
+Import the logger from `src/config/logger.js`. It is using the [Winston](https://github.com/winstonjs/winston) logging library.
+
+Logging should be done according to the following severity levels (ascending order from most important to least important):
+
+```javascript
+const logger = require('<path to src>/config/logger');
+
+logger.error('message');    // level 0
+logger.warn('message');     // level 1
+logger.info('message');     // level 2
+logger.http('message');     // level 3
+logger.verbose('message');  // level 4
+logger.debug('message');    // level 5
+```
+
+
 # License
 
 This project is licensed under the MIT License.
