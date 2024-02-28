@@ -42,9 +42,8 @@ const resetPassword = catchAsyncErrors(async (req, res) => {
     res.status(HTTP_STATUS_CODES.OK).json({ status: 'ok', message: "Password changed successfully" });
 });
 
-const sendVerificationEmail = catchAsyncErrors(async (req, res) => {
-    const verifyEmailToken = await tokenService.generateVerifyEmailToken(req.body);
-    await emailService.sendVerificationEmail(req.body, verifyEmailToken);
+const testEmail = catchAsyncErrors(async (req, res) => {
+    await emailService.testEmail(req.body.email);
     res.status(HTTP_STATUS_CODES.OK).json({ delivered: 1, status: 'ok' });
 });
 
@@ -55,12 +54,12 @@ const verifyEmail = catchAsyncErrors(async (req, res) => {
 });
 
 module.exports = {
+    testEmail,
     register,
     login,
     logout,
     refreshTokens,
     forgotPassword,
     resetPassword,
-    sendVerificationEmail,
     verifyEmail,
 };

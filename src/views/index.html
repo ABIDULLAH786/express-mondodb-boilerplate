@@ -1,103 +1,88 @@
 <!doctype html>
 <html lang="en">
-    <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-      <title>Congratulations</title>
-      <style>
-        body {
-          margin: 0;
-          padding: 0;
-          font-family: 'Segoe UI', Roboto, Arial, sans-serif;
-          background-color: #1a1d21;
-          color: white;
-        }
 
-        .container {
-          max-width: 960px;
-          margin: 0 auto;
-          padding: 20px;
-        }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>Congratulations</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+      background-color: #1a1d21;
+      color: white;
+    }
 
-        .card {
-          border-radius: 1rem;
-          box-shadow:
-            0 4px 8px 0 rgba(0, 0, 0, 0.2),
-            0 6px 20px 0 rgba(0, 0, 0, 0.19);
-          padding: 20px;
-          text-align: center;
-        }
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 20px;
+    }
 
-        .logo {
-          display: inline-block;
-          margin-bottom: 10px;
-        }
+    .card {
+      border-radius: 1rem;
+      box-shadow:
+        0 4px 8px 0 rgba(0, 0, 0, 0.2),
+        0 6px 20px 0 rgba(0, 0, 0, 0.19);
+      padding: 20px;
+      text-align: center;
+    }
 
-        .logo img {
-          width: 50px;
-          height: 50px;
-        }
+    .logo {
+      display: inline-block;
+      margin-bottom: 10px;
+    }
 
-        .footer {
-          text-align: center;
-          padding: 20px;
-        }
+    .logo img {
+      width: 50px;
+      height: 50px;
+    }
 
-        .footer img {
-          width: 50px;
-          height: 50px;
-        }
+    .footer {
+      text-align: center;
+      padding: 20px;
+    }
 
-        .footer p {
-          margin: 0;
-        }
+    .footer img {
+      width: 50px;
+      height: 50px;
+    }
 
-        .powered-by img {
-          width: 30px;
-          height: 30px;
-          vertical-align: middle;
-        }
-      </style>
-    </head>
-    
+    .footer p {
+      margin: 0;
+    }
 
-  <body>
-    <div class="container">
-      <div class="card">
-        <div class="display-2">
-          🎉 Congratulations, Your account has been created successfully
-        </div>
-        <div class="display-4">User Name: <b>{{userName}}</b></div>
-        <div class="display-4">Thanks for Using Timate</div>
+    .powered-by img {
+      width: 30px;
+      height: 30px;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+
+
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="display-2">
+        🎉 Congratulations, Your account has been created successfully
       </div>
-
-      <footer class="footer">
-        <div class="logo">
-          <img
-            src=""
-            alt="Product Logo"
-          />
-        </div>
-        <div>
-          <p style="font-weight: bolder;">Product Name</p>
-          <p class="powered-by">
-            <p style="font-size: 12px;">
-              powered by
-            </p>
-            <div style="padding: 10px;">
-              <img
-              src=""
-              alt="Product Logo"
-            />
-            <b>Product Name</b>
-            
-            </div>
-          </p>
-          <p style="font-size: 12px">Your envision, we build</p>
-        </div>
-        <p>Email: info@example.com</p>
-      </footer>
+      <div class="display-4">User Name: <b>{{userName}}</b></div>
+      <div class="display-4">Thanks for Using {{companyName}}</div>
     </div>
-  </body>
+
+    <footer class="footer">
+      <div class="logo">
+        <img src="https://www.kadencewp.com/wp-content/uploads/2020/10/alogo-1.svg" alt="company Logo" />
+      </div>
+      <div>
+        <p style="font-weight: bolder;">{{companyName || "AK TECK"}}</p>
+      </div>
+      <p>Email: abidullah.se@gmail.com</p>
+    </footer>
+  </div>
+</body>
+
 </html>

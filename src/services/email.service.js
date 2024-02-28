@@ -55,6 +55,31 @@ module.exports.sendVerificationEmail = async (user, token, options = "") => {
 
 };
 
+/**
+ * testing email service/configuration
+ * @param {string} email
+ * @returns {Promise}
+ */
+module.exports.testEmail = async (email) => {
+    transport.use('compile', hbs(handlebarOptions));
+    const subject = 'Testing Email';
+
+    const message = {
+        from: `${process.env.SMTP_FROM_EMAIL}`,
+        to: email || 'abidullah.bsef18@iba-suk.edu.pk',
+        subject: subject,
+        template: 'email',
+        context: {
+            companyName: "AK TECH",
+        },
+    };
+    const mailSent = await transport.sendMail(message).catch((e) => {
+        console.log('error in sending link for email varification', e)
+        throw new ErrorHandler(e, HTTP_STATUS_CODES.BAD_REQUEST)
+    });
+
+};
+
 
 /**
  * Send Verified email
