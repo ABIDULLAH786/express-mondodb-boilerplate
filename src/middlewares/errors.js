@@ -1,8 +1,15 @@
+const logger = require('../config/logger');
 const ErrorHandler = require('../utils/errorHandler');
 module.exports = (err, req, res, next) => {
     err.statusCode = err.statusCode || 500;
     if (process.env.NODE_ENV === 'DEVELOPMENT') {
         res.status(err.statusCode).json({
+            success: false,
+            status_code: err.statusCode,
+            message: err.message,
+            stack: err.stack
+        })
+        logger.error({
             success: false,
             status_code: err.statusCode,
             message: err.message,
