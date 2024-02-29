@@ -5,11 +5,11 @@ const { userController } = require('../controllers');
 const router = express.Router();
 
 
-router.route('/api/v1/users').get(userController.getAllUsers)
-router.route('/api/v1/users/:id').get(userController.getUser)
-router.route('/api/v1/users').post(userController.createUser)
-router.route('/api/v1/users/:id').put(userController.updateUser)
-router.route('/api/v1/users/:id').delete(userController.deleteUser)
-router.route('/api/v1/users/profile/:id/').post(authentication, userController.getUserDetails)
+router.route('/api/users').get(userController.getAllUsers)
+router.route('/api/users/:id').get(userController.getUser)
+router.route('/api/users').post(userController.createUser)
+router.route('/api/users/:id').put(userController.updateUser)
+router.route('/api/users/:id').delete(userController.deleteUser)
+router.route('/api/users/profile/:id/').post(authentication, userController.getUserDetails)
 
 module.exports = router;

@@ -1,15 +1,20 @@
 const logger = require('../config/logger');
 const ErrorHandler = require('../utils/errorHandler');
+
+module.exports.errorConverter = (err, req, res, next) => {
+    let error = err;
+    if (!(error instanceof ErrorHandler)) {
+        const statusCode =
+            error.statusCode || error instanceof mongoose.Error ? httpStatus.BAD_REQUEST : httpStatus.INTERNAL_SERVER_ERROR;
+        const message = error.message || httpStatus[statusCode];
+        error = new ErrorHandler(statusCode, message, false, err.stack);
+    }
+    next(error);
+};
 module.exports = (err, req, res, next) => {
     err.statusCode = err.statusCode || 500;
     if (process.env.NODE_ENV === 'DEVELOPMENT') {
         res.status(err.statusCode).json({
-            success: false,
-            status_code: err.statusCode,
-            message: err.message,
-            stack: err.stack
-        })
-        logger.error({
             success: false,
             status_code: err.statusCode,
             message: err.message,
