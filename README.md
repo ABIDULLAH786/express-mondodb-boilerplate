@@ -67,7 +67,7 @@ logger.http('message');     // level 3
 logger.verbose('message');  // level 4
 logger.debug('message');    // level 5
 ```
-
+Note: API request information (request url, response code, timestamp, etc.) are also automatically logged (using [morgan](https://github.com/expressjs/morgan)).
 
 # License
 
