@@ -3,7 +3,7 @@ const moment = require('moment');
 const userService = require('./user.service');
 const { Token } = require('../models');
 const { tokenTypes } = require('../config/tokens');
-const ErrorHandler = require('../utils/errorHandler');
+const ApiError = require('../utils/ApiError');
 const { HTTP_STATUS_CODES } = require('../utils/status_codes');
 
 /**
@@ -54,7 +54,7 @@ const verifyToken = async (token, type, secret = process.env.JWT_SECRET_KEY) => 
     const payload = jwt.verify(token, secret);
     const tokenDoc = await Token.findOne({ token, type, user: payload.sub, blacklisted: false });
     if (!tokenDoc) {
-        throw new ErrorHandler('Invalid token', HTTP_STATUS_CODES.BAD_REQUEST);
+        throw new ApiError('Invalid token', HTTP_STATUS_CODES.BAD_REQUEST);
     }
     return tokenDoc;
 };
@@ -92,7 +92,7 @@ const generateAuthTokens = async (user) => {
 const generateResetPasswordToken = async (email) => {
     const user = await userService.getUserByEmail(email);
     if (!user) {
-        throw new ErrorHandler('No users found with this email', HTTP_STATUS_CODES.NOT_FOUND);
+        throw new ApiError('No users found with this email', HTTP_STATUS_CODES.NOT_FOUND);
     }
     const expires = moment().add(process.env.JWT_RESET_PASSWORD_TOKEN_EXPIRES_TIME, 'minutes');
     const resetPasswordToken = generateToken(user.id, expires, tokenTypes.RESET_PASSWORD);

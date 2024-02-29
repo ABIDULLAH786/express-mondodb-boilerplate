@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const ErrorHandler = require("../utils/errorHandler");
+const ApiError = require("../utils/ApiError");
 const { HTTP_STATUS_CODES } = require("../utils/status_codes");
 const { tokenTypes } = require("../config/tokens");
 require("dotenv").config();
@@ -15,7 +15,7 @@ const authToken = (req, res, next) => {
 
     // If token not found, send error message
     if (!token) {
-        throw new ErrorHandler("Token not found", HTTP_STATUS_CODES.NOT_FOUND)
+        throw new ApiError("Token not found", HTTP_STATUS_CODES.NOT_FOUND)
     }
 
     // Authenticate token
@@ -24,7 +24,7 @@ const authToken = (req, res, next) => {
         if (payload) {
             next();
         } else {
-            throw new ErrorHandler("Unathorized", HTTP_STATUS_CODES.UNAUTHORIZED)
+            throw new ApiError("Unathorized", HTTP_STATUS_CODES.UNAUTHORIZED)
 
         }
 

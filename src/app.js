@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const { HTTP_STATUS_CODES } = require("./utils/status_codes");
-const ErrorHandler = require("./utils/errorHandler");
+const ApiError = require("./utils/ApiError");
 const morgan = require('./config/margon');
 
 const app = new express();
@@ -33,7 +33,7 @@ app.use(require("./middlewares/errors"));
 
 // send back a 404 error for any unknown api request
 app.use((req, res, next) => {
-    next(new ErrorHandler(HTTP_STATUS_CODES.NOT_FOUND, 'Not found'));
+    next(new ApiError('Not found',HTTP_STATUS_CODES.NOT_FOUND));
 });
 
 

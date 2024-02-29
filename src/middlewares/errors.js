@@ -1,13 +1,13 @@
 const logger = require('../config/logger');
-const ErrorHandler = require('../utils/errorHandler');
+const ApiError = require('../utils/ApiError');
 
 module.exports.errorConverter = (err, req, res, next) => {
     let error = err;
-    if (!(error instanceof ErrorHandler)) {
+    if (!(error instanceof ApiError)) {
         const statusCode =
             error.statusCode || error instanceof mongoose.Error ? httpStatus.BAD_REQUEST : httpStatus.INTERNAL_SERVER_ERROR;
         const message = error.message || httpStatus[statusCode];
-        error = new ErrorHandler(statusCode, message, false, err.stack);
+        error = new ApiError(statusCode, message, false, err.stack);
     }
     next(error);
 };
@@ -30,31 +30,31 @@ module.exports = (err, req, res, next) => {
         // Wrong Mongoose Object ID Error
         if (err.name === 'CastError') {
             const message = `Resource not found. Invalid: ${err.path}`
-            error = new ErrorHandler(message, err.statusCode)
+            error = new ApiError(message, err.statusCode)
         }
 
         // Handling Mongoose Validation Error
         if (err.name === 'ValidationError') {
             const message = Object.values(err.errors).map(value => value.message);
-            error = new ErrorHandler(message, 400)
+            error = new ApiError(message, 400)
         }
 
         // Handling Mongoose duplicate key errors
         if (err.statusCode == 11000) {
             const message = `Duplicate ${Object.keys(err.keyValue)} entered`
-            error = new ErrorHandler(message, 400)
+            error = new ApiError(message, 400)
         }
 
         // Handling wrong JWT error
         if (err.name === 'JsonWebTokenError') {
             const message = 'JSON Web Token is invalid. Try Again!!!'
-            error = new ErrorHandler(message, err.statusCode)
+            error = new ApiError(message, err.statusCode)
         }
 
         // Handling Expired JWT error
         if (err.name === 'TokenExpiredError') {
             const message = 'JSON Web Token is expired. Try Again!!!'
-            error = new ErrorHandler(message, err.statusCode)
+            error = new ApiError(message, err.statusCode)
         }
 
         res.status(error.statusCode || 500).json({
