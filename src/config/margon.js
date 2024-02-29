@@ -1,11 +1,11 @@
 const morgan = require('morgan');
 const logger = require('./logger');
 
-morgan.token('message', (req, res) => res.locals.errorMessage || '');
+// morgan.token('message', (req, res, err) => res.locals.errorMessage || '');
 
-const getIpFormat = () => (process.env.NODE_ENV !== 'DEVELOPMENT' ? ':remote-addr - ' : '');
+const getIpFormat = () => (process.env.NODE_ENV === 'PRODUCTION' ? ':remote-addr - ' : '');
 const successResponseFormat = `${getIpFormat()}:method :url :status - :response-time ms`;
-const errorResponseFormat = `${getIpFormat()}:method :url :status - :response-time ms - message: :message`;
+const errorResponseFormat = `${getIpFormat()}:method :url :status - :response-time ms`;
 
 const successHandler = morgan(successResponseFormat, {
     skip: (req, res) => res.statusCode >= 400,

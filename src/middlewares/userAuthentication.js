@@ -36,6 +36,7 @@ const authToken = (req, res, next) => {
 
         // Handling Expired JWT error
         if (err.name === 'TokenExpiredError') {
+            throw new ApiError("JSON Web Token is expired, login again", HTTP_STATUS_CODES.UNAUTHORIZED)
             return res.status(400).send({ error: true, message: "JSON Web Token is expired, login again" });
         }
 
