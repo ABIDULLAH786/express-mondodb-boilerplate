@@ -2,7 +2,7 @@ const nodemailer = require('nodemailer');
 const path = require('path');
 
 var hbs = require('nodemailer-express-handlebars');
-const ErrorHandler = require('../utils/errorHandler');
+const ApiError = require('../utils/ApiError');
 const { HTTP_STATUS_CODES } = require('../utils/status_codes');
 
 const handlebarOptions = {
@@ -49,7 +49,7 @@ module.exports.sendVerificationEmail = async (user, token, options = "") => {
         },
     };
     const mailSent = await transport.sendMail(message).catch((e) => {
-        throw new ErrorHandler(e, HTTP_STATUS_CODES.BAD_REQUEST)
+        throw new ApiError(e, HTTP_STATUS_CODES.BAD_REQUEST)
     });
 
 };
@@ -73,7 +73,7 @@ module.exports.testEmail = async (email) => {
         },
     };
     const mailSent = await transport.sendMail(message).catch((e) => {
-        throw new ErrorHandler(e, HTTP_STATUS_CODES.BAD_REQUEST)
+        throw new ApiError(e, HTTP_STATUS_CODES.BAD_REQUEST)
     });
 
 };
@@ -100,7 +100,7 @@ module.exports.sendVerifiedConfirmation = async (user, options = {}) => {
         },
     };
     const res = await transport.sendMail(message).catch((e) => {
-        throw new ErrorHandler(e, HTTP_STATUS_CODES.BAD_REQUEST)
+        throw new ApiError(e, HTTP_STATUS_CODES.BAD_REQUEST)
     });
 
 };
@@ -133,7 +133,7 @@ module.exports.sendResetPasswordEmail = async (user, token, options = {}) => {
         },
     };
     const mailSent = await transport.sendMail(message).catch((e) => {
-        throw new ErrorHandler(e, HTTP_STATUS_CODES.BAD_REQUEST)
+        throw new ApiError(e, HTTP_STATUS_CODES.BAD_REQUEST)
     });
 
 };

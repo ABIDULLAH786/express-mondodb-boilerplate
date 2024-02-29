@@ -1,17 +1,45 @@
 const express = require("express");
-const app = new express();
 const cors = require("cors");
+const { HTTP_STATUS_CODES } = require("./utils/status_codes");
+const ApiError = require("./utils/ApiError");
+const morgan = require('./config/margon');
+const {  errorHandler } = require("./middlewares/error");
 
-const errorMiddleware = require("./middlewares/errors");
+const app = new express();
+
+// parse json request body
 app.use(express.json());
+
+// parse urlencoded request body
+app.use(express.urlencoded({ extended: true }));
+
+// enable cors
 app.use(cors());
 
-const { userRoute, authRoute } = require("./routes")
+
+
+// logs HTTP requests to help in debuging and monitoring web server activity.
+app.use(morgan.successHandler);
+app.use(morgan.errorHandler);
+
+// API Routes
+const { userRoute, authRoute } = require("./routes");
 app.get('/', (req, res) => {
     res.send("Server is on Fire")
 })
-app.use(authRoute)
-app.use(userRoute)
-app.use(errorMiddleware);
+app.use('/v1', authRoute)
+app.use('/v1', userRoute)
+
+// send back a 404 error for any unknown api request
+app.use((req, res, next) => {
+    next(new ApiError('Not found',HTTP_STATUS_CODES.NOT_FOUND));
+});
+
+
+// handle error
+app.use(errorHandler); // error handler should be below API routes
+
+
+
 
 module.exports = app;

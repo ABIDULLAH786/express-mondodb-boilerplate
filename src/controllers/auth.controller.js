@@ -1,6 +1,6 @@
 const { authService, userService, tokenService, emailService } = require('../services');
 const catchAsyncErrors = require('../utils/catchAsyncError');
-const ErrorHandler = require('../utils/errorHandler');
+const ApiError = require('../utils/ApiError');
 const { HTTP_STATUS_CODES } = require('../utils/status_codes');
 
 const register = catchAsyncErrors(async (req, res) => {
@@ -28,7 +28,7 @@ const refreshTokens = catchAsyncErrors(async (req, res) => {
 });
 
 const forgotPassword = catchAsyncErrors(async (req, res) => {
-    if (!req.body.email) throw new ErrorHandler("Required Data is missing", HTTP_STATUS_CODES.BAD_REQUEST)
+    if (!req.body.email) throw new ApiError("Required Data is missing", HTTP_STATUS_CODES.BAD_REQUEST)
 
     const { user, resetPasswordToken } = await tokenService.generateResetPasswordToken(req.body.email);
     await emailService.sendResetPasswordEmail(user, resetPasswordToken);
@@ -36,7 +36,7 @@ const forgotPassword = catchAsyncErrors(async (req, res) => {
 });
 
 const resetPassword = catchAsyncErrors(async (req, res) => {
-    if (!req.body.password) throw new ErrorHandler("Required Data is missing", HTTP_STATUS_CODES.BAD_REQUEST)
+    if (!req.body.password) throw new ApiError("Required Data is missing", HTTP_STATUS_CODES.BAD_REQUEST)
 
     await authService.resetPassword(req.body.token, req.body.password);
     res.status(HTTP_STATUS_CODES.OK).json({ status: 'ok', message: "Password changed successfully" });
