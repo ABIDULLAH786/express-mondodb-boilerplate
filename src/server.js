@@ -1,8 +1,6 @@
 const app = require("./app");
 const logger = require('./config/logger');
-const dotenv = require("dotenv");
 
-dotenv.config({ path: "src/config/config.env" });
 
 const connectDatabase = require("./database/connection");
 
